@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dxzf.mapper.AdminMapper">
+	<resultMap type="Admin" id="adminResultMap">
+		<id property="aid" column="aid" />
+		<result property="aaccount" column="aaccount" />
+		<result property="apsw" column="apsw" />
+		<result property="aphoto" column="aphoto" />
+		<result property="aidcard" column="aidcard" />
+		<result property="aname" column="aname" />
+		<result property="atel" column="atel" />
+		<result property="aemail" column="aemail" />
+		<result property="acreate" column="acreate" />
+		<result property="apriv" column="apriv" />
+		<association property="lr" column="aid"
+			select="org.lanqiao.dxzf.mapper.RoleMapper.selectAllRoleByAid"></association>
+		<association property="lp" column="aid"
+			select="org.lanqiao.dxzf.mapper.PrivMapper.selectAllPrivByAid"></association>
+	</resultMap>
+	<select id="selectAllAdmins" resultType="Admin">
+		select * from ADMIN
+		<where>
+			<if test="aaccount!=null and aaccount!=''">
+				and aaccount=#{aaccount}
+			</if>
+			<if test="apsw!=null and apsw!=''">
+				and apsw=#{apsw}
+			</if>
+		</where>
+	</select>
+	<select id="selectAdminByName" parameterType="String"
+		resultType="Admin">
+		select * from ADMIN where aname like concat('%',#{aname},'%')
+	</select>
+
+	<delete id="deleteAdmin">
+		delete from ADMIN where aid=#{aid}
+	</delete>
+	<update id="updateAdmin" parameterType="Admin">
+		update ADMIN
+		<set>
+			<if test="aaccount!=null and aaccount!=''">aaccount=#{aaccount},</if>
+			<if test="apsw!=null and apsw!=''">apsw=#{apsw},</if>
+			<if test="aphoto!=null and aphoto!=''">aphoto=#{aphoto},</if>
+			<if test="aidcard!=null and aidcard!=''">aidcard=#{aidcard},</if>
+			<if test="aname!=null and aname!=''">aname=#{aname},</if>
+			<if test="atel!=null and atel!=''">atel=#{atel},</if>
+			<if test="aemail!=null and aemail!=''">aemail=#{aemail},</if>
+			<if test="acreate!=null and acreate!=''">acreate=#{acreate},</if>
+			<if test="apriv!=null and apriv!=''">apriv=#{apriv}</if>
+		</set>
+		 where aid=#{aid}
+	</update>
+	<insert id="insertAdmin" parameterType="Admin">
+		insert into ADMIN
+		values(null,#{aaccount},#{apsw},#{aphoto},#{aidcard},#{aname},#{atel},#{aemail},#{acreate},#{apriv})
+	</insert>
+	<select id="selectAllAdmin_Role_Priv" parameterType="Admin"
+		resultMap="adminResultMap">
+		select * from ADMIN
+		<where>
+			<!-- id不能为初始化的-1 -->
+			<if test="aid!=null and aid!=-1">
+				and aid=#{aid}
+			</if>
+			<!-- 登录部分 -->
+			<if test="aaccount!=null and aaccount!=''">
+				and aaccount=#{aaccount}
+			</if>
+			<if test="apsw!=null and apsw!=''">
+				and apsw=#{apsw}
+			</if>
+			<!-- 模糊查询部分 -->
+			<if test="aname!=null and aname!=''">
+				and aname like concat('%',#{aname},'%')
+			</if>
+		</where>
+	</select>
+</mapper>

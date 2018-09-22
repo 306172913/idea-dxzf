@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dxzf.mapper.PrivMapper">
+	<select id="selectAllPrivs" resultType="Priv">
+		select * from PRIV
+	</select>
+	<delete id="deletePriv">
+		delete from PRIV where pid=#{pid}
+	</delete>
+	<update id="updatePriv" parameterType="Priv">
+		update PRIV set pname=#{pname},phref=#{phref},pclass=#{pclass} where
+		pid=#{pid}
+	</update>
+	<insert id="insertPriv" parameterType="Priv">
+		insert into PRIV values(null,#{pname},#{phref},#{pclass})
+	</insert>
+	<select id="selectAllPrivByRid" parameterType="int"
+		resultType="Priv">
+		<!-- 根据角色id查询权限 -->
+		select pid,pname,phref,pclass from PRIV where pid in(select pid from
+		RP_TABLE where rid=#{rid})
+	</select>
+	<select id="selectAllPrivByAid" parameterType="int"
+		resultType="Priv">
+		<!-- 根据id查询权限 -->
+		select p.pid,p.pname,p.phref,p.pclass
+		from ADMIN a,AR_TABLE ar,ROLE r,RP_TABLE rp,PRIV p
+		where a.aid=ar.aid and ar.rid=r.rid and r.rid=rp.rid and rp.pid=p.pid
+		and a.aid=#{aid} group by p.pid
+	</select>
+</mapper>

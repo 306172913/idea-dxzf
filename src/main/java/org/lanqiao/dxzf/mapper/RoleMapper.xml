@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dxzf.mapper.RoleMapper">
+	<!-- **********resultMap定义区 ********************************************-->
+	<resultMap type="Role" id="roleResultMap">
+		<id property="rid" column="rid" />
+		<result property="rname" column="rname" />
+		<result property="rinfo" column="rinfo" />
+		<association property="lp" column="rid"
+			select="org.lanqiao.dxzf.mapper.PrivMapper.selectAllPrivByRid"></association>
+	</resultMap>
+	<!-- SQL片段定义区 -->
+	<sql id="roleFields" >rid,rname,rinfo</sql>
+	<!-- ****************数据查询区******************************************** -->
+	<select id="selectAllRoles" resultType="Role">
+		select <include refid="roleFields" /> from ROLE
+	</select>
+	<select id="selectAllRoleByAid" parameterType="int"
+		resultMap="roleResultMap">
+		select <include refid="roleFields"/> from ROLE where rid in(select rid from AR_TABLE where
+		aid=#{aid})
+	</select>
+	<!-- ****************数据修改区******************************************** -->
+	<delete id="deleteRole">
+		delete from ROLE where rid=#{rid}
+	</delete>
+	<update id="updateRole" parameterType="Role">
+		update ROLE set rname=#{rname},rinfo=#{rinfo} where rid=#{rid}
+	</update>
+	<insert id="insertRole" parameterType="Role">
+		insert into ROLE values(null,#{rname},#{rinfo})
+	</insert>
+
+	<!-- 批量添加 -->
+	<insert id="insertRoles" parameterType="list">
+		insert into ROLE values
+		<foreach collection="list" item="Role" separator=",">
+		(null,#{rname},#{rinfo})
+		</foreach>
+	</insert>
+</mapper>
